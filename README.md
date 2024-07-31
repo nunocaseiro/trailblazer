@@ -135,9 +135,9 @@ Trailblazer provides several methods for navigation:
 
 # Advanced Features 🚀
 
-## Modifiers upon routing or presenting
+## Modifiers
 
-Customize view using the `with` parameter:
+Customize view using the `with` parameter upon routing or presenting:
 
 ```swift
 coordinator.route(to: .detail(id: 1), with: { view in
