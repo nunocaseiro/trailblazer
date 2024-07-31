@@ -44,7 +44,7 @@ class AppCoordinator: NavigationCoordinator {
 
     override init() {
         super.init()
-        self.setRoot(.root)
+        self.setRoot(.home)
     }
 }
 ```
