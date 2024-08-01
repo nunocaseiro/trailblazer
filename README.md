@@ -2,7 +2,7 @@
   <img src="./Images/wordmark.svg" alt="Trailblazer" width="100%">
 </p>
 
-[![Language](https://img.shields.io/static/v1.svg?label=language&message=Swift%205&color=FA7343&logo=swift&style=flat-square)](https://swift.org)
+[![Language](https://img.shields.io/static/v1.svg?label=language&message=Swift%205.9&color=FA7343&logo=swift&style=flat-square)](https://swift.org)
 [![Platform](https://img.shields.io/static/v1.svg?label=platforms&message=iOS%20|%20tvOS%20|%20watchOS%20|%20macOS&logo=apple&style=flat-square)](https://apple.com)
 [![License](https://img.shields.io/cocoapods/l/Crossroad.svg?style=flat-square)](https://github.com/dotaeva/trailblazer/blob/main/LICENSE)
 
@@ -61,7 +61,7 @@ struct ContentView: View {
 }
 ```
 
-3. Retrieve the routes' coordinator using the `@EnvironmentObject`
+3. Retrieve the routes' coordinator using the `@EnvironmentObject`:
 
 ```swift
 struct HomeView: View {
