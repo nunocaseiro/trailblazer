@@ -43,6 +43,7 @@ internal struct NavigationCoordinatorRootView: View {
     var body: some View {
         NavigationStack(path: coordinator.combinedStack) {
             coordinator.root?.view
+                .environmentObjectIfPossible(self)
                 .navigationDestination(for: RouteWrapper.self, destination: wrappedView)
         }
         .sheet(item: coordinator.sharedSheet, onDismiss: coordinator.onDismiss, content: modalView)
