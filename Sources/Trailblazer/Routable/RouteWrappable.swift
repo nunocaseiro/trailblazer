@@ -13,4 +13,5 @@ public protocol RouteWrappable: Identifiable, Hashable {
     var route: Any { get }
     var coordinator: (any Coordinatable)? { get }
     var view: AnyView? { get }
+    var modifier: AnyViewModifier { get }
 }

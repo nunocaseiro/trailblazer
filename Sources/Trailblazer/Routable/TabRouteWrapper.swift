@@ -14,6 +14,7 @@ public struct TabRouteWrapper: RouteWrappable {
     public var _coordinator: (() -> (any Coordinatable))?
     public var view: AnyView?
     public let tabItem: AnyView
+    public let modifier: AnyViewModifier = AnyViewModifier.identity
     
     public var coordinator: (any Coordinatable)? {
         _coordinator?()

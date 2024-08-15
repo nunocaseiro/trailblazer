@@ -36,6 +36,7 @@ public extension Coordinatable {
                 parent.presentedFullScreenCover = nil
             } else {
                 parent.stack.removeAll(where: { $0.coordinator?.id == self.id })
+                parent.parent?.notifyStackChanged()
             }
         }
     }

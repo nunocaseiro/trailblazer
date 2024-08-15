@@ -28,6 +28,7 @@ internal struct NavigationCoordinatorRootView: View {
                 EmptyView()
             }
         }
+        .modifier(route.modifier)
     }
     
     private func modalView(_ route: RouteWrapper) -> some View {
@@ -35,23 +36,20 @@ internal struct NavigationCoordinatorRootView: View {
             if let view = route.view {
                 view
                     .environmentObjectIfPossible(route.parent)
-                    .modifier(route.modifier)
             } else if let c = route.coordinator as? NavigationCoordinator {
                 NavigationCoordinatorRootView(coordinator: c)
                     .environmentObjectIfPossible(c)
-                    .modifier(route.modifier)
             } else if let c = route.coordinator as? TabCoordinator {
                 TabCoordinatorRootView(coordinator: c)
                     .environmentObjectIfPossible(c)
-                    .modifier(route.modifier)
             } else if let c = route.coordinator as? RootCoordinator {
                 RootCoordinatorRootView(coordinator: c)
                     .environmentObjectIfPossible(c)
-                    .modifier(route.modifier)
             } else {
                 EmptyView()
             }
         }
+        .modifier(route.modifier)
     }
     
     var body: some View {
