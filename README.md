@@ -53,7 +53,7 @@ class AppCoordinator: NavigationCoordinator {
 
 ```swift
 struct ContentView: View {
-    @StateObject var coordinator = AppCoordinator()
+    let coordinator = AppCoordinator()
     
     var body: some View {
         coordinator.view
