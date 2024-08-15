@@ -66,6 +66,8 @@ public extension NavigationCoordinatable {
             sharedSheet.wrappedValue = nil
         } else if !stack.isEmpty {
             stack.removeLast()
+        } else if stack.isEmpty && parent != nil {
+            dismissCoordinator()
         }
         
         notifyStackChanged()
