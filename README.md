@@ -26,7 +26,7 @@ Trailblazer is available through SPM.
 - macOS 14.0+
 - tvOS 16.0+
 - watchOS 9.0+
-- Xcode 15.0+ (Recommended XCode 16.0+ due to extended Macro support for type-checking)
+- Xcode 15.0+ (Recommended XCode 16.0+)
 - Swift 5.9+
 
 # Usage 🧑‍💻
@@ -144,6 +144,8 @@ Functions:
 - `popToFirst` - Removes all routes above the first appearance of a specific route in the stack.
 - `popToLast` - Removes all routes above the last appearance of a specific route in the stack.
 
+Example above.
+
 ### TabCoordinator
 
 TabCoordinator implements TabView.
@@ -164,6 +166,23 @@ Functions:
 - `removeFirst`- Removes the first occurrence of a tab with the specified route.
 - `removeLast`- Removes the last occurrence of a tab with the specified route.
 
+Example:
+```swift
+@Coordinatable
+class AuthenticatedCoordinator: TabCoordinator {
+    @Route func home() -> (any Coordinatable, some View) { ( HomeCoordinator(), Text("Home") ) }
+    @Route func settings() -> (any Coordinatable, some View) { ( SettingsCoordinator(), Text("Settings") ) }
+    
+    override init() {
+        super.init()
+        setTabs([
+            .home,
+            .settings
+        ])
+    }
+}
+```
+
 ### RootCoordinator
 
 RootCoordinator implements a simple view-switching coordinator without implementing a NavigationStack.
@@ -175,6 +194,21 @@ Supported `@Route` return types:
 Functions:
 
 - `setRoot` - Sets a new root view.
+
+Example:
+```swift
+@Coordinatable
+class UnauthenticatedCoordinator: RootCoordinator {
+    @Route func login() -> some View { Button("Log in!") { self.setRoot(.authenticated) } }
+    @Route func authenticated() -> any Coordinatable { AuthenticatedCoordinator() }
+    
+    override init() {
+        super.init()
+        setRoot(.login)
+    }
+}
+
+```
 
 # Advanced Features 🚀
 
