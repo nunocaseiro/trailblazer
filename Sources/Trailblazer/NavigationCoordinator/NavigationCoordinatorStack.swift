@@ -1,6 +1,6 @@
 //
 //  NavigationCoordinatorStack.swift
-//  
+//
 //
 //  Created by Alexandr Valíček on 29.07.2024.
 //
@@ -18,7 +18,7 @@ extension NavigationCoordinator {
         
         return combined
     }
-
+    
     private func flattenedStackForCoordinator(_ coordinator: any Coordinatable) -> [RouteWrapper] {
         switch coordinator {
         case let navigationCoordinator as NavigationCoordinator:
@@ -31,7 +31,7 @@ extension NavigationCoordinator {
             return []
         }
     }
-
+    
     private func flattenedStackForCoordinator(_ coordinator: (any Coordinatable)?) -> [RouteWrapper] {
         guard let coordinator = coordinator else { return [] }
         return flattenedStackForCoordinator(coordinator)
@@ -52,16 +52,20 @@ extension NavigationCoordinator {
                     guard let existing = navigationCoordinator.stack.first(where: { $0.id == route.id }) else { return false }
                     
                     index += 1
-                    index = update(existing.coordinator as! (any AnyCoordinator), from: &index)
+                    if let coordinatorToUpdate = existing.coordinator as? (any AnyCoordinator) {
+                        index = update(coordinatorToUpdate, from: &index)
+                    }
                     return true
                 }
             case let tabCoordinator as TabCoordinator:
-                if let selectedTab = tabCoordinator.selectedTab {
-                    index = update(selectedTab.coordinator as! (any AnyCoordinator), from: &index)
+                if let selectedTab = tabCoordinator.selectedTab,
+                   let coordinatorToUpdate = selectedTab.coordinator as? (any AnyCoordinator) {
+                    index = update(coordinatorToUpdate, from: &index)
                 }
             case let rootCoordinator as RootCoordinator:
-                if let root = rootCoordinator.root {
-                    index = update(root.coordinator as! (any AnyCoordinator), from: &index)
+                if let root = rootCoordinator.root,
+                   let coordinatorToUpdate = root.coordinator as? (any AnyCoordinator) {
+                    index = update(coordinatorToUpdate, from: &index)
                 }
             default:
                 break
