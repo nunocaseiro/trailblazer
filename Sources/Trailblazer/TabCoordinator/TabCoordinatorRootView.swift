@@ -25,8 +25,8 @@ internal struct TabCoordinatorRootView: View {
                 }
             } else if let c = route.coordinator as? TabCoordinator {
                 TabCoordinatorRootView(coordinator: c)
-            } else if let c = route.coordinator as? RootCoordinator, let view = c.view as? AnyView {
-                view
+            } else if let c = route.coordinator as? RootCoordinator {
+                c.view
                     .environmentObjectIfPossible(c)
             } else {
                 EmptyView()
@@ -35,8 +35,8 @@ internal struct TabCoordinatorRootView: View {
     }
     
     var body: some View {
-        TabView(selection: $coordinator.selectedTab) {
-            ForEach(coordinator.tabs, id: \.self) { tab in
+        TabView(selection: selectedTabBinding) {
+            ForEach(coordinator.tabs) { tab in
                 wrappedView(tab)
                     .environmentObjectIfPossible(coordinator)
                     .tabItem {
@@ -45,5 +45,14 @@ internal struct TabCoordinatorRootView: View {
                     .tag(tab)
             }
         }
+    }
+}
+
+extension TabCoordinatorRootView {
+    private var selectedTabBinding: Binding<TabRouteWrapper> {
+        Binding(
+            get: { self.coordinator.selectedTab ?? self.coordinator.tabs.first ?? TabRouteWrapper(parent: AnyCoordinatableBox(), route: (Any).self, view: EmptyView(), tabItem: EmptyView()) },
+            set: { self.coordinator.selectedTab = $0 }
+        )
     }
 }

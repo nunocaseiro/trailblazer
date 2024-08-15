@@ -15,22 +15,22 @@ internal struct RootCoordinatorRootView: View {
             if let view = route.view {
                 view
                     .environmentObjectIfPossible(route.parent)
-            } else if let c = route.coordinator as? NavigationCoordinator, let view = c.root?.view {
+            } else if let c = route.coordinator as? NavigationCoordinator {
                 if coordinator.hasLayerNavigationCoordinator {
-                    view
+                    c.root?.view
                         .environmentObjectIfPossible(c)
                 } else {
                     NavigationCoordinatorRootView(coordinator: c)
                         .environmentObjectIfPossible(c)
                 }
-            } else if let c = route.coordinator as? TabCoordinator, let view = c.view as? AnyView {
-                view
+            } else if let c = route.coordinator as? TabCoordinator {
+                c.view
                     .environmentObjectIfPossible(c)
-            } else if let c = route.coordinator as? RootCoordinator, let view = c.view as? AnyView {
-                view
+            } else if let c = route.coordinator as? RootCoordinator {
+                c.view
                     .environmentObjectIfPossible(c)
             } else {
-                EmptyView()
+                 EmptyView()
             }
         }
     }

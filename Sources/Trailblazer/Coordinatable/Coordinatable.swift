@@ -40,3 +40,14 @@ public extension Coordinatable {
         }
     }
 }
+
+class AnyCoordinatableBox: Coordinatable {
+    func createRouteWrapper(from: Routes) -> any RouteWrappable {
+        fatalError()
+    }
+    
+    enum Routes { case none }
+    var parent: (any Coordinatable)?
+    var hasLayerNavigationCoordinator: Bool = false
+    var id: UUID = UUID()
+}
