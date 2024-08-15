@@ -22,46 +22,31 @@ final class TrailblazerTests: XCTestCase {
             @Coordinatable
             class AppRouter: NavigationCoordinator {
                 @Route func root() -> some View { Text("Root") }
-                @Route func detail(_ string: String) -> some View { Button(string) { self.route(to: .setting(s: SettingsRouter())) } }
-                @Route func setting(s: SettingsRouter) -> any Coordinatable { s }
+                @Route func detail(_ string: String) -> some View { Button(string) { self.route(to: .setting) } }
+                @Route func setting() -> any Coordinatable { SettingRouter() }
             }
             """,
             expandedSource: """
             class AppRouter: NavigationCoordinator {
                 func root() -> some View { Text("Root") }
-                func detail(_ string: String) -> some View { Button(string) { self.route(to: .setting(s: SettingsRouter())) } }
-                func setting(s: SettingsRouter) -> any Coordinatable { s }
+                func detail(_ string: String) -> some View { Button(string) { self.route(to: .setting) } }
+                func setting() -> any Coordinatable { SettingRouter() }
             }
             
             extension AppRouter: NavigationCoordinatable {
                 enum Routes {
                     case root
                     case detail(String)
-                    case setting(s: SettingsRouter)
+                    case setting
                 }
-                enum ReferencedRoutes {
-                    case root(AppRouter)
-                    case detail(AppRouter, String)
-                    case setting(AppRouter, s: SettingsRouter)
-                }
-                func getReferencedRoute(from dereferenced: Routes) -> ReferencedRoutes {
-                    switch dereferenced {
-                    case .root:
-                        return .root(self)
-                    case .detail(let string):
-                        return .detail(self, string)
-                    case .setting(let s):
-                        return .setting(self, s: s)
-                    }
-                }
-                func createRouteWrapper(from route: ReferencedRoutes) -> any RouteWrappable {
+                func createRouteWrapper(from route: Routes) -> any RouteWrappable {
                     switch route {
-                    case .root(_):
-                        return RouteWrapper(route: route, view: root())
-                    case .detail(_, let arg0):
-                        return RouteWrapper(route: route, view: detail(arg0))
-                    case .setting(_, let s):
-                        return RouteWrapper(route: route, coordinator: setting(s: s))
+                        case .root:
+                            return RouteWrapper(parent: self, route: route, view: AnyView(root()))
+                        case .detail(let arg0):
+                            return RouteWrapper(parent: self, route: route, view: AnyView(detail(arg0)))
+                        case .setting:
+                            return RouteWrapper(parent: self, route: route, coordinator: setting())
                     }
                 }
             }
@@ -73,37 +58,28 @@ final class TrailblazerTests: XCTestCase {
         #endif
     }
 
-    func testSettingsRouterExpansion() throws {
+    func testRootRouterExpansion() throws {
         #if canImport(TrailblazerMacros)
         assertMacroExpansion(
             """
             @Coordinatable
-            class SettingsRouter: NavigationCoordinator {
+            class RootRouter: NavigationCoordinator {
                 @Route func root() -> some View { Text("Root") }
             }
             """,
             expandedSource: """
-            class SettingsRouter: NavigationCoordinator {
+            class RootRouter: NavigationCoordinator {
                 func root() -> some View { Text("Root") }
             }
             
-            extension SettingsRouter: NavigationCoordinatable {
+            extension RootRouter: NavigationCoordinatable {
                 enum Routes {
                     case root
                 }
-                enum ReferencedRoutes {
-                    case root(SettingsRouter)
-                }
-                func getReferencedRoute(from dereferenced: Routes) -> ReferencedRoutes {
-                    switch dereferenced {
-                    case .root:
-                        return .root(self)
-                    }
-                }
-                func createRouteWrapper(from route: ReferencedRoutes) -> any RouteWrappable {
+                func createRouteWrapper(from route: Routes) -> any RouteWrappable {
                     switch route {
-                    case .root(_):
-                        return RouteWrapper(route: route, view: root())
+                        case .root:
+                            return RouteWrapper(parent: self, route: route, view: AnyView(root()))
                     }
                 }
             }

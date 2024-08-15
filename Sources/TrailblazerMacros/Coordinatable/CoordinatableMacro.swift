@@ -19,25 +19,31 @@ public struct CoordinatableMacro: ExtensionMacro {
         in context: some MacroExpansionContext
     ) throws -> [ExtensionDeclSyntax] {
         guard let classDecl = declaration.as(ClassDeclSyntax.self) else {
-            throw MacroError.notAClass
+            throw CoordinatableMacroError.notAClass
         }
         
         let className = classDecl.name.text
         
-        let routeMethods = classDecl.memberBlock.members
-            .compactMap { $0.decl.as(FunctionDeclSyntax.self) }
-            .filter { $0.attributes.contains { $0.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "Route" } }
+        let coordinatorType = CoordinatorTypeResolver.resolve(from: classDecl)
         
-        let extensionContent = generateExtensionContent(className: className, routeMethods: routeMethods)
+        if coordinatorType == .none {
+            throw CoordinatableMacroError.notACoordinatorClass
+        }
+        
+        let routeMethods = RouteMethodExtractor.extract(from: classDecl)
+        
+        if routeMethods.isEmpty { return [] }
+        
+        let extensionContent = ExtensionContentGenerator.generate(className: className, routeMethods: routeMethods, coordinatorType: coordinatorType)
+        
+        let conformanceProtocol = coordinatorType.rawValue
         
         let extensionDeclString = """
-        extension \(type.trimmed): NavigationCoordinatable {
+        extension \(type.trimmed): \(conformanceProtocol) {
         \(extensionContent.split(separator: "\n").map { "    \($0)" }.joined(separator: "\n"))
         }
         """
 
-        let extensionDecl = try ExtensionDeclSyntax(SyntaxNodeString(stringLiteral: extensionDeclString))
-
-        return [extensionDecl]
+        return try [ExtensionDeclSyntax(SyntaxNodeString(stringLiteral: extensionDeclString))]
     }
 }

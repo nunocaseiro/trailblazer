@@ -4,7 +4,7 @@
 import SwiftUI
 
 @attached(extension,
-          conformances: NavigationCoordinatable,
+          conformances: NavigationCoordinatable, TabCoordinatable, RootCoordinatable,
           names: named(ReferencedRoutes),
           named(Routes),
           named(getReferencedRoute(from:)),

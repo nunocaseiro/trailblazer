@@ -2,7 +2,7 @@
   <img src="./Images/wordmark.svg" alt="Trailblazer" width="100%">
 </p>
 
-[![Language](https://img.shields.io/static/v1.svg?label=language&message=Swift%205&color=FA7343&logo=swift&style=flat-square)](https://swift.org)
+[![Language](https://img.shields.io/static/v1.svg?label=language&message=Swift%205.9&color=FA7343&logo=swift&style=flat-square)](https://swift.org)
 [![Platform](https://img.shields.io/static/v1.svg?label=platforms&message=iOS%20|%20tvOS%20|%20watchOS%20|%20macOS&logo=apple&style=flat-square)](https://apple.com)
 [![License](https://img.shields.io/cocoapods/l/Crossroad.svg?style=flat-square)](https://github.com/dotaeva/trailblazer/blob/main/LICENSE)
 
@@ -26,12 +26,12 @@ Trailblazer is available through SPM.
 - macOS 14.0+
 - tvOS 16.0+
 - watchOS 9.0+
-- Xcode 15.0+
+- Xcode 15.0+ (Recommended XCode 16.0+ due to extended Macro support for type-checking)
 - Swift 5.9+
 
 # Usage 🧑‍💻
 
-## Defining the coordinator
+## Defining a navigation coordinator
 
 1. Create a coordinator class that inherits from `NavigationCoordinator`:
    
@@ -44,7 +44,7 @@ class AppCoordinator: NavigationCoordinator {
 
     override init() {
         super.init()
-        self.setRoot(.root)
+        self.setRoot(.home)
     }
 }
 ```
@@ -61,7 +61,7 @@ struct ContentView: View {
 }
 ```
 
-3. Retrieve the routes' coordinator using the `@EnvironmentObject`
+3. Retrieve the routes' coordinator using the `@EnvironmentObject`:
 
 ```swift
 struct HomeView: View {
@@ -99,9 +99,9 @@ class AppCoordinator: NavigationCoordinator {
 ```
 
 Functionality:
-- Generates `Routes` and `ReferencedRoutes` enums from defined `@Route`s
-- Implements `getReferencedRoute(from:)` and `createRouteWrapper(from:)` methods from defined `@Route`s
-- Conforms the class to `NavigationCoordinatable`
+- Generates `Routes` enum from defined `@Route`s
+- Implements `createRouteWrapper(from:)` methods from defined `@Route`s
+- Conforms the class to the respective `Coordinatable`
 
 ### @Route
 
@@ -114,7 +114,7 @@ The `@Route` macro is used to annotate methods in your coordinator that represen
 ```
 
 Functionality:
-- Marks a method as a navigation destination for the `@Coordinatable` macro
+- Marks a method as a navigation destination for the `@Coordinatable` macro, making it usable as an enum when routing
 
 Limitations:
 - Can only be applied to methods
@@ -122,10 +122,21 @@ Limitations:
 
 Using these macros significantly reduces boilerplate code and enforces a consistent structure for your navigation logic.
 
-## Navigation
+## Detailed usage
 
-Trailblazer provides several methods for navigation:
+Trailblazer provides several Coordinator type for navigation:
 
+### NavigationCoordinator
+
+NavigationCoordinator implements NavigationStack.
+
+Supported `@Route` return types:
+- `some View`
+- `any Coordinatable`
+
+Functions:
+
+- `setRoot` - Sets a new root view for the navigation stack.
 - `route` - Navigates to another route.
 - `present` - Presents route modally (sheet or fullScreenCover).
 - `pop` - Removes the latest route from the stack.
@@ -133,11 +144,43 @@ Trailblazer provides several methods for navigation:
 - `popToFirst` - Removes all routes above the first appearance of a specific route in the stack.
 - `popToLast` - Removes all routes above the last appearance of a specific route in the stack.
 
+### TabCoordinator
+
+TabCoordinator implements TabView.
+
+Supported `@Route` return types:
+- `some View` - Generates a tab where content will be returned type and TabItem will be EmptyView()
+- `any Coordinatable` - Generates a tab where content will be returned type and TabItem will be EmptyView()
+- `(some View, some View)` - Generates a tab where content will be first tuple item and TabItem will be the second tuple item
+- `(any Coordinatable, some View)` - Generates a tab where content will be first tuple item and TabItem will be the second tuple item
+
+Functions:
+
+- `select(_ tab)` - Selects a tab based on its route type.
+- `select(index)` - Selects a tab based on its index in the tabs array.
+- `setTabs` - Replaces the current tabs with a new set of tabs.
+- `appendTab` - Adds a new tab to the end of the tabs array.
+- `insertTab` - Inserts a new tab at a specified index in the tabs array.
+- `removeFirst`- Removes the first occurrence of a tab with the specified route.
+- `removeLast`- Removes the last occurrence of a tab with the specified route.
+
+### RootCoordinator
+
+RootCoordinator implements a simple view-switching coordinator without implementing a NavigationStack.
+
+Supported `@Route` return types:
+- `some View`
+- `any Coordinatable`
+
+Functions:
+
+- `setRoot` - Sets a new root view.
+
 # Advanced Features 🚀
 
-## Modifiers upon routing or presenting
+## Modifiers
 
-Customize view using the `with` parameter:
+Customize view using the `with` parameter upon routing or presenting:
 
 ```swift
 coordinator.route(to: .detail(id: 1), with: { view in
@@ -166,7 +209,6 @@ Trailblazer supports method chaining for more complex navigation flows:
 coordinator
     .route(to: .detail(id: 1))
     .route(to: .settings)
-    .present(.profile, as: .sheet)
 ```
 
 ## Deep Linking

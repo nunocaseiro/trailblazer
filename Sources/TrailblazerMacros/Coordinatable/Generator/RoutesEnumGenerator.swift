@@ -1,17 +1,14 @@
 //
-//  RoutesEnumCases.swift
+//  RoutesEnumGenerator.swift
 //  
 //
-//  Created by Alexandr Valíček on 29.07.2024.
+//  Created by Alexandr Valíček on 14.08.2024.
 //
 
-import SwiftCompilerPlugin
 import SwiftSyntax
-import SwiftSyntaxBuilder
-import SwiftSyntaxMacros
 
-extension CoordinatableMacro {
-    static func generateRoutesEnumCases(routeMethods: [FunctionDeclSyntax]) -> String {
+struct RoutesEnumGenerator {
+    static func generate(routeMethods: [FunctionDeclSyntax]) -> String {
         routeMethods.map { method in
             let parameters = method.signature.parameterClause.parameters.map { param in
                 if param.firstName.text == "_" {

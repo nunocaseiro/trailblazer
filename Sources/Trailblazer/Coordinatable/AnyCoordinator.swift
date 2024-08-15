@@ -8,21 +8,9 @@
 import SwiftUI
 
 protocol AnyCoordinator: ObservableObject {
-    var parent: (any Coordinatable)? { get set }
     associatedtype Body: View
+    var parent: (any Coordinatable)? { get set }
+    var hasLayerNavigationCoordinator: Bool { get set }
     var view: Body { get }
-}
-
-extension AnyCoordinator {
-    func parentInTree<T: AnyCoordinator>(ofType type: T.Type) -> Bool {
-        if let parent = parent as? (any AnyCoordinator) {
-            if parent is T {
-                return true
-            } else {
-                return parent.parentInTree(ofType: type)
-            }
-        }
-        
-        return false
-    }
+    var id: UUID { get }
 }

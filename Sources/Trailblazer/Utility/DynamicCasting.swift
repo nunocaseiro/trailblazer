@@ -12,6 +12,6 @@ public extension View {
         guard let observableObject = (object as? (any ObservableObject)) else {
             return AnyView(self)
         }
-        return AnyView((self as any View).environmentObject(observableObject))
+        return AnyView((self.environmentObject(observableObject) as any View))
     }
 }

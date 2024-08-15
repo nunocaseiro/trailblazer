@@ -22,6 +22,7 @@ public extension NavigationCoordinatable {
         stack.append(wrapper)
         
         notifyStackChanged()
+        
         return self
     }
     
@@ -40,6 +41,8 @@ public extension NavigationCoordinatable {
         with modifier: ((any View) -> any View)? = nil
     ) -> Self {
         let wrapper = prepareWrapper(for: route, with: modifier)
+        wrapper.coordinator?.hasLayerNavigationCoordinator = false
+        
         self.onDismiss = onDismiss
         
         switch presentationType {
@@ -87,9 +90,8 @@ public extension NavigationCoordinatable {
     /// - Returns: Self for method chaining.
     @discardableResult
     func popToFirst(route: Routes) -> Self {
-        let concreteRoute = getReferencedRoute(from: route)
         if let index = stack.firstIndex(where: {
-            return String(describing: $0.route.self) == String(describing: concreteRoute.self)
+            return String(describing: $0.route.self) == String(describing: route.self)
         }) {
             if index != stack.count - 1 {
                 sharedFullScreenCover.wrappedValue = nil
@@ -107,9 +109,8 @@ public extension NavigationCoordinatable {
     /// - Returns: Self for method chaining.
     @discardableResult
     func popToLast(route: Routes) -> Self {
-        let concreteRoute = getReferencedRoute(from: route)
         if let index = stack.lastIndex(where: {
-            return String(describing: $0.route.self) == String(describing: concreteRoute.self)
+            return String(describing: $0.route.self) == String(describing: route.self)
         }) {
             if index != stack.count - 1 {
                 sharedFullScreenCover.wrappedValue = nil
@@ -137,24 +138,5 @@ public extension NavigationCoordinatable {
     /// - Returns: The topmost RouteWrapper, or nil if the stack is empty.
     func peek() -> RouteWrapper? {
         return combinedStack.wrappedValue.last ?? root
-    }
-}
-
-extension NavigationCoordinatable {
-    private func prepareWrapper(for route: Routes, with modifier: ((any View) -> any View)? = nil) -> RouteWrapper {
-        let concreteRoute = getReferencedRoute(from: route)
-        if var wrapper = createRouteWrapper(from: concreteRoute) as? RouteWrapper {
-            wrapper.modifier = modifier.map { m in
-                AnyViewModifier { AnyView(m($0)) }
-            } ?? .identity
-            
-            if let coordinator = wrapper.coordinator {
-                coordinator.parent = self
-            }
-            
-            return wrapper
-        } else {
-            return RouteWrapper(route: concreteRoute, view: EmptyView())
-        }
     }
 }

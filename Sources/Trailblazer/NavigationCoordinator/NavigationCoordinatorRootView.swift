@@ -12,13 +12,19 @@ internal struct NavigationCoordinatorRootView: View {
     
     func wrappedView(_ route: any RouteWrappable) -> some View {
         Group {
-            if let view = route.view, let v = route.extractCoordinator(route.route) {
+            if let view = route.view {
                 view
-                    .environmentObjectIfPossible(v)
+                    .environmentObjectIfPossible(route.parent)
             } else if let c = route.coordinator as? NavigationCoordinator, let view = c.root?.view {
                 view
                     .environmentObjectIfPossible(c)
-            }  else {
+            } else if let c = route.coordinator as? TabCoordinator, let view = c.view as? AnyView {
+                view
+                    .environmentObjectIfPossible(c)
+            } else if let c = route.coordinator as? RootCoordinator, let view = c.view as? AnyView {
+                view
+                    .environmentObjectIfPossible(c)
+            } else {
                 EmptyView()
             }
         }
@@ -26,12 +32,20 @@ internal struct NavigationCoordinatorRootView: View {
     
     private func modalView(_ route: RouteWrapper) -> some View {
         Group {
-            if let view = route.view, let v = route.extractCoordinator(route.route) {
+            if let view = route.view {
                 view
-                    .environmentObjectIfPossible(v)
+                    .environmentObjectIfPossible(route.parent)
                     .modifier(route.modifier)
             } else if let c = route.coordinator as? NavigationCoordinator {
                 NavigationCoordinatorRootView(coordinator: c)
+                    .environmentObjectIfPossible(c)
+                    .modifier(route.modifier)
+            } else if let c = route.coordinator as? TabCoordinator {
+                TabCoordinatorRootView(coordinator: c)
+                    .environmentObjectIfPossible(c)
+                    .modifier(route.modifier)
+            } else if let c = route.coordinator as? RootCoordinator {
+                RootCoordinatorRootView(coordinator: c)
                     .environmentObjectIfPossible(c)
                     .modifier(route.modifier)
             } else {
@@ -42,7 +56,8 @@ internal struct NavigationCoordinatorRootView: View {
     
     var body: some View {
         NavigationStack(path: coordinator.combinedStack) {
-            coordinator.root?.view
+            coordinator.root?.view?
+                .environmentObjectIfPossible(coordinator)
                 .navigationDestination(for: RouteWrapper.self, destination: wrappedView)
         }
         .sheet(item: coordinator.sharedSheet, onDismiss: coordinator.onDismiss, content: modalView)

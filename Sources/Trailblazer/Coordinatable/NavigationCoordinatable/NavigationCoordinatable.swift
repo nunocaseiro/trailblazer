@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Combine
 
 public protocol NavigationCoordinatable: Coordinatable {
     var root: RouteWrapper? { get set }
