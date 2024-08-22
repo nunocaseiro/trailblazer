@@ -263,7 +263,9 @@ func handleDeepLink(_ url: URL) {
             coordinator.route(to: .detail(id: idInt))
         }
     case "settings":
-        coordinator.route(to: .settings)
+        coordinator.route(to: .settings) { (s: SettingsRouter)
+            s.route(to: .someSettings)
+        }
     default:
         break
     }
