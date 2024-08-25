@@ -1,0 +1,24 @@
+{
+  "originHash" : "14e95466927f24f751c8b4be04a46e7db51e5be6fb8993f645001219bb8a3ca1",
+  "pins" : [
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "515f79b522918f83483068d99c68daeb5116342d",
+        "version" : "600.0.0-prerelease-2024-08-20"
+      }
+    },
+    {
+      "identity" : "trailblazer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dotaeva/trailblazer",
+      "state" : {
+        "revision" : "a8c8e5a50658b0907f7c3a4f5fe326c309cb5eae",
+        "version" : "1.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}
