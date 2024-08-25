@@ -242,7 +242,9 @@ Trailblazer supports method chaining for more complex navigation flows:
 ```swift
 coordinator
     .route(to: .detail(id: 1))
-    .route(to: .settings)
+    .route(to: .settings) { (s: SettingsRouter) in
+        s.route(to: .someSettings)
+    }
 ```
 
 ## Deep Linking
